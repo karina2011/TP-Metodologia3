@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Reservas Master</title>
+
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- Custom styles for this template -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">Reservas Master</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li nav-item active>
+            <a class="nav-link disabled text-white">¡Bienvenido, {{request.user}}!</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/">Home
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+            <li class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Agregar...
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <a class="dropdown-item" href="/propiedad">Propiedad</a>
+                    {% if request.user.is_superuser %}
+                    <a class="dropdown-item" href="/ciudad">Ciudad</a>
+                    {% endif %}
+                  </div>
+            </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Cerrar Sesión</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <div class="container mt-5">
+
+    <div class="row">
+
+      <div class="col-lg-3">
+
+      <p class="h4 my-4">Ordena las propiedades:</p>
+          <div class="list-group text-center">
+              <a href="{{request.path}}?orderby=higher_price" class="list-group-item">Mayor Precio:</a>
+              <a href="{{request.path}}?orderby=lower_price" class="list-group-item">Menor Precio:</a>
+              <a href="{{request.path}}?orderby=higher_capacity" class="list-group-item">Mayor Capacidad:</a>
+              <a href="{{request.path}}?orderby=lower_capacity" class="list-group-item">Menor Capacidad:</a>
+          </div>
+
+        <p class="h4 my-4">Filtra por ciudad:</p>
+        <div class="list-group text-center">
+          <a href="/" class="list-group-item h5 text-primary"><strong>Mostrar todo</strong></a>
+            {% for ppt in propiedades_por_ciudad %}
+              {% for ciudad in ciudades_list %}
+                {% if ppt.city == ciudad.id %}
+                    <a href="/city/{{ciudad.id}}" class="list-group-item">{{ ciudad.name }} ({{ ppt.city_count }})</a>
+                {% endif %}
+              {% endfor %}
+            {% endfor %}
+        </div>
+
+      </div>
+      <!-- /.col-lg-3 -->
+
+      <div class="col-lg-9">
+
+        <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
+          <div class="carousel-inner" role="listbox">
+            <div class="carousel-item active">
+              <img class="d-block img-fluid" src="https://media.graytvinc.com/images/810*455/airbnb+mgn4.jpg" alt="First slide">
+            </div>
+          </div>
+        </div>
+
+        {% if city %}
+          <div class="row">
+          {% for propiedad in propiedades_list %}
+            {% if propiedad.city == city %}
+              <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                {% if propiedad.image %}
+                    <img class="card-img-top" src="{{ propiedad.image.url }}">>
+                {% endif %}
+              <div class="card-body">
+                <h4 class="card-title">
+                  <a class="text-decoration-none" href="/detail/{{ propiedad.id }}" >{{ propiedad.name }}</a>
+                </h4>
+                <h5>${{ propiedad.price }}</h5>
+                <p class="card-text">{{propiedad.description}}</p>
+              </div>
+              <div class="card-footer">
+                    <p class="card-text text-center"><strong>{{propiedad.city}}, {{propiedad.city.province}}</strong></p>
+              </div>
+            </div>
+          </div>
+            {% endif %}
+          {% empty %}
+            <h5>No articles yet.</h5>
+          {% endfor %}
+        </div>
+        <!-- /.row -->
+        {% else %}
+          <div class="row">
+          {% for propiedad in propiedades_list %}
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                {% if propiedad.image %}
+                    <img class="card-img-top" src="{{propiedad.image.url}}">
+                {% else %}
+                    <img class="card-img-top" src="http://placehold.it/900x350" alt="Imagen_no_disponible">
+                {% endif %}
+              <div class="card-body">
+                <h4 class="card-title">
+                  <a class="text-decoration-none" href="/detail/{{ propiedad.id }}" >{{ propiedad.name }}</a>
+                </h4>
+                <h5>${{ propiedad.price }}</h5>
+                <p class="card-text">{{propiedad.description}}</p>
+              </div>
+              <div class="card-footer">
+                    <p class="card-text text-center"><strong>{{propiedad.city}}, {{propiedad.city.province}}</strong></p>
+              </div>
+            </div>
+          </div>
+          {% empty %}
+            <h5>No articles yet.</h5>
+          {% endfor %}
+        </div>
+        <!-- /.row -->
+        {% endif %}
+
+      </div>
+      <!-- /.col-lg-9 -->
+
+    </div>
+    <!-- /.row -->
+
+  </div>
+  <!-- /.container -->
+
+  <!-- Footer -->
+  <footer class="py-5 bg-dark">
+    <div class="container">
+      <p class="m-0 text-center text-white">Copyright &copy; Reservas Master 2019</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+
+</body>
+
+</html>
