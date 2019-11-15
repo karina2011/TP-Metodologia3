@@ -3,10 +3,10 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+
 class City(models.Model):
-    name = models.CharField(max_length=50)
-    province = models.CharField(max_length=50)
+    name = models.CharField(max_length=45)
+    province = models.CharField(max_length=45)
 
     class Meta:
         verbose_name_plural = 'Ciudades'
@@ -15,27 +15,28 @@ class City(models.Model):
         return self.name
 
 
-class Owner_Ship(models.Model):
-    name = models.CharField(max_length=50)
+class Property(models.Model):
+    name = models.CharField(max_length=45)
     description = models.CharField(max_length=200)
     price = models.IntegerField()
     capacity = models.IntegerField()
     city = models.ForeignKey(City, null=True, on_delete=models.SET_NULL)
     owner = models.ForeignKey(User, null=False, on_delete=models.SET('null'))
-    image = models.ImageField(upload_to='application/img', null=True)
+    image = models.ImageField(upload_to='rent/img/', null=True)
 
     class Meta:
         verbose_name_plural = 'Propiedades'
 
     def __str__(self):
-        return self.description
+        return self.name
 
 
 class Reservation(models.Model):
     date = models.DateTimeField()
-    code = models.IntegerField()
     total = models.IntegerField()
-    owner_ship = models.ForeignKey(Owner_Ship, null=False, on_delete=models.SET('null'))
+    reservationCode = models.IntegerField()
+    property = models.ForeignKey(Property, null=False, on_delete=models.SET('null'), default=1) #property es una palabra reservada y por eso sale en verde
+    user = models.ForeignKey(User, null=True, on_delete=models.SET('null'), blank=True)
 
     class Meta:
         verbose_name_plural = 'Reservas'
@@ -44,9 +45,9 @@ class Reservation(models.Model):
         return datetime.strftime(self.date, '%d/%m/%Y')
 
 
-class Rent_Date(models.Model):
+class RentDate(models.Model):
     date = models.DateTimeField()
-    owner_ship = models.ForeignKey(Owner_Ship, null=False, on_delete=models.SET('null'))
+    property = models.ForeignKey(Property, null=False, on_delete=models.SET('null'), default=1)
     reservation = models.ForeignKey(Reservation, null=True, on_delete=models.SET_NULL, blank=True)
 
     class Meta:

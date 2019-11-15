@@ -1,6 +1,6 @@
 from django import forms
 
-from rent.models import City, Owner_Ship
+from .models import City, Property
 
 
 class CityForm(forms.ModelForm):
@@ -11,7 +11,7 @@ class CityForm(forms.ModelForm):
         model = City
         fields = ('name', 'province',)
 
-class OwnerShipForm(forms.Form):
+class PropertyForm(forms.Form):
     ciudades_list = City.objects.all()
     name = forms.CharField(label='Nombre:', max_length=15)
     description = forms.Textarea()
@@ -21,5 +21,5 @@ class OwnerShipForm(forms.Form):
     image = forms.ImageField(label='Imagen')
 
     class meta:
-        model = Owner_Ship
+        model = Property
         fields = ('name', 'description', 'capacity', 'price', 'city', 'image',)

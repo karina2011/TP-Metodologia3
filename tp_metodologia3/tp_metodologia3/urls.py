@@ -26,8 +26,12 @@ urlpatterns = [
     path('login', views.login),
     path('logout', views.logout),
     path('admin/', admin.site.urls),
-    path('detail/<int:owner_ship_id>', views.detail),
+    path('detail/<int:property_id>', views.detail),
     path('city/<int:city_id>', views.welcome),
-    path('reservation_detail', views.reservation),
-    path('admin/', admin.site.urls),
+    path('userlists',views.userlist),
+    path('reservation_detail/<int:reservation_id>', views.reservation),
+    path('reservations', views.reservations)
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
